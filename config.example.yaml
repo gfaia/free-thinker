@@ -1,0 +1,25 @@
+database:
+  driver: sqlite
+  dsn: data/aggregator.db
+
+storage:
+  content_root: data/articles
+
+schedule:
+  cron: "0 2 * * *"
+
+fetchers:
+  - name: zhihu
+    enabled: true
+    queries:
+      - golang
+      - distributed systems
+    config:
+      max_pages: 3
+      rate_limit_ms: 800
+
+  # - name: weibo
+  #   enabled: false
+  #   queries:
+  #     - golang
+  #   config: {}
