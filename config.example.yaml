@@ -1,6 +1,6 @@
 database:
   driver: sqlite
-  dsn: data/aggregator.db
+  dsn:    data/aggregator.db
 
 storage:
   content_root: data/articles
@@ -17,6 +17,8 @@ fetchers:
     config:
       max_pages: 3
       rate_limit_ms: 800
+      # user_agent: "..."
+      # cookie:   "..."
 
   # - name: weibo
   #   enabled: false
