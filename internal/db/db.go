@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"os"
+	"path/filepath"
 	"time"
 
 	_ "modernc.org/sqlite"
@@ -29,6 +31,9 @@ type ArticleRecord struct {
 func Open(driver, dsn string) (*Store, error) {
 	if driver != "sqlite" {
 		return nil, fmt.Errorf("only sqlite driver is implemented (got %q)", driver)
+	}
+	if dir := filepath.Dir(dsn); dir != "" && dir != "." {
+		_ = os.MkdirAll(dir, 0o755)
 	}
 	db, err := sql.Open("sqlite", dsn)
 	if err != nil {
