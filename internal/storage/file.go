@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -33,4 +34,49 @@ func (fs *FileStore) Save(source, content string) (string, error) {
 		return "", fmt.Errorf("write file: %w", err)
 	}
 	return full, nil
+}
+
+func (fs *FileStore) Read(path string) ([]byte, error) {
+	if path == "" {
+		return nil, fmt.Errorf("empty content path")
+	}
+
+	root, err := filepath.Abs(fs.root)
+	if err != nil {
+		return nil, fmt.Errorf("resolve storage root: %w", err)
+	}
+	target := filepath.Clean(path)
+	if !filepath.IsAbs(target) {
+		absTarget, err := filepath.Abs(target)
+		if err != nil {
+			return nil, fmt.Errorf("resolve content path: %w", err)
+		}
+		if isWithin(root, absTarget) {
+			target = absTarget
+		} else {
+			target = filepath.Join(root, target)
+		}
+	}
+	target, err = filepath.Abs(target)
+	if err != nil {
+		return nil, fmt.Errorf("resolve content path: %w", err)
+	}
+
+	if !isWithin(root, target) {
+		return nil, fmt.Errorf("content path outside storage root")
+	}
+
+	b, err := os.ReadFile(target)
+	if err != nil {
+		return nil, fmt.Errorf("read content file: %w", err)
+	}
+	return b, nil
+}
+
+func isWithin(root, target string) bool {
+	rel, err := filepath.Rel(root, target)
+	if err != nil {
+		return false
+	}
+	return rel != ".." && !strings.HasPrefix(rel, ".."+string(filepath.Separator)) && !filepath.IsAbs(rel)
 }

@@ -20,6 +20,10 @@ type Schedule struct {
 	Cron string `yaml:"cron"`
 }
 
+type Portal struct {
+	Addr string `yaml:"addr"`
+}
+
 type FetcherEntry struct {
 	Name    string                 `yaml:"name"`
 	Enabled bool                   `yaml:"enabled"`
@@ -28,9 +32,10 @@ type FetcherEntry struct {
 }
 
 type Config struct {
-	Database Database      `yaml:"database"`
-	Storage  Storage       `yaml:"storage"`
-	Schedule Schedule      `yaml:"schedule"`
+	Database Database       `yaml:"database"`
+	Storage  Storage        `yaml:"storage"`
+	Schedule Schedule       `yaml:"schedule"`
+	Portal   Portal         `yaml:"portal"`
 	Fetchers []FetcherEntry `yaml:"fetchers"`
 }
 
@@ -62,6 +67,9 @@ func (c *Config) applyDefaults() {
 	}
 	if c.Schedule.Cron == "" {
 		c.Schedule.Cron = "0 2 * * *"
+	}
+	if c.Portal.Addr == "" {
+		c.Portal.Addr = "127.0.0.1:8080"
 	}
 }
 
